@@ -1,4 +1,5 @@
 #include "raylib.h"
+#include <vector>
 
 class Brick {
     public:
@@ -44,14 +45,70 @@ class Ball{
             //modify the position of the ball based on its speed
             position.x += speed.x * GetFrameTime();
             position.y += speed.y * GetFrameTime();
+
+            if(position.x <=0 || position.x >= GetScreenWidth()){
+                speed.x *= -1; //reverse the horizontal direction of the ball
+            }
+
+            if(position.y <=0 || position.y >= GetScreenHeight()){
+                speed.y *= -1; //reverse the vertical direction of the ball
+            }
         }
 };
+
+void GenerateBricks(std::vector<Brick>& bricks){
+    //Assuming that our screen is 800px in width,we can fit 8 bricks in a row if each brick is 100px wide
+    for(int i=0; i <8; i++){
+        float x = 100 * i; //calculate the x position of the brick based on the index
+        float y=0; //set the y position of the brick to 0
+        Vector2 position = {x,y}; //create a vector2 to hold the x and y position of the brick
+        Vector2 size = {100,50}; //create a vector2 to hold the width and height of the brick
+
+        //randomly generate a color for the brick
+        int r = GetRandomValue(0,255);
+        int g = GetRandomValue(0,255);
+        int b = GetRandomValue(0,255);
+
+        Color color = {r,g,b,255}; //create a color based on the random values
+
+        //create a brick instance
+        Brick brick(position,size,color);
+        bricks.push_back(brick); //add the brick to the vector
+
+    }
+}
+
+void DrawBricks(std::vector<Brick>& bricks){
+    //iterate through the vector of bricks
+    for(int i=0; i < bricks.size(); i++){
+        bricks[i].Draw(); //draw the brick
+    }
+}
+
+void HandleBallBrickCollisions(Ball& ball, std::vector<Brick>& bricks){
+    //check for collisions between the ball and the bricks
+    for(int i=0; i<bricks.size(); i++){
+        //make use of CheckCollisionCircleRec
+        if(CheckCollisionCircleRec(ball.position, ball.radius,Rectangle{bricks[i].position.x, bricks[i].position.y, bricks[i].size.x, bricks[i].size.y})){
+            //reverse the vertical direction of the ball
+            ball.speed.y *= -1;
+            //remove the brick from the vector
+            bricks.erase(bricks.begin() + i);
+            break; //break out of the loop
+        }
+    }
+
+} 
+
+
 
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
 int main(void)
 {
+    std::vector<Brick> bricks; //create a vector of bricks
+
     // Initialization
     //--------------------------------------------------------------------------------------
     const int screenWidth = 800;
@@ -63,10 +120,14 @@ int main(void)
     //--------------------------------------------------------------------------------------
 
     //create a single brick instance
-    Brick brick({200,50},{100,50},RED);
+    //Brick brick({200,50},{100,50},RED);
 
     //create a single ball instance
-    Ball ball({400,300},10,RED,{50,50});
+    Ball ball({400,300},10,RED,{50,50}); 
+
+
+     //generate the bricks
+    GenerateBricks(bricks);
 
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
@@ -74,6 +135,8 @@ int main(void)
         // Update
         //----------------------------------------------------------------------------------
         ball.Update(); //update the ball
+        HandleBallBrickCollisions(ball,bricks); //handle the ball and brick collisions
+             
         //----------------------------------------------------------------------------------
 
         // Draw
@@ -82,8 +145,9 @@ int main(void)
 
             ClearBackground(RAYWHITE);
 
-            brick.Draw(); //draw the brick
-            ball.Draw(); //draw the ball
+            //brick.Draw(); //draw the brick
+            DrawBricks(bricks); //draw the bricks
+            ball.Draw(); //draw the ball       
 
         EndDrawing();
         //----------------------------------------------------------------------------------
