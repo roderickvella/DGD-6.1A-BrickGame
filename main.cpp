@@ -56,27 +56,53 @@ class Ball{
         }
 };
 
+// void GenerateBricks(std::vector<Brick>& bricks){
+//     //Assuming that our screen is 800px in width,we can fit 8 bricks in a row if each brick is 100px wide
+//     for(int i=0; i <8; i++){
+//         float x = 100 * i; //calculate the x position of the brick based on the index
+//         float y=0; //set the y position of the brick to 0
+//         Vector2 position = {x,y}; //create a vector2 to hold the x and y position of the brick
+//         Vector2 size = {100,50}; //create a vector2 to hold the width and height of the brick
+
+//         //randomly generate a color for the brick
+//         int r = GetRandomValue(0,255);
+//         int g = GetRandomValue(0,255);
+//         int b = GetRandomValue(0,255);
+
+//         Color color = {r,g,b,255}; //create a color based on the random values
+
+//         //create a brick instance
+//         Brick brick(position,size,color);
+//         bricks.push_back(brick); //add the brick to the vector
+
+//     }
+// }
+
+
 void GenerateBricks(std::vector<Brick>& bricks){
-    //Assuming that our screen is 800px in width,we can fit 8 bricks in a row if each brick is 100px wide
-    for(int i=0; i <8; i++){
-        float x = 100 * i; //calculate the x position of the brick based on the index
-        float y=0; //set the y position of the brick to 0
-        Vector2 position = {x,y}; //create a vector2 to hold the x and y position of the brick
-        Vector2 size = {100,50}; //create a vector2 to hold the width and height of the brick
+    float brickWidth = 100;
+    float brickHeight = 50;
 
-        //randomly generate a color for the brick
-        int r = GetRandomValue(0,255);
-        int g = GetRandomValue(0,255);
-        int b = GetRandomValue(0,255);
+    for(int row = 0; row < 5; row++){
+        for(int col = 0; col < 8; col++){
+            float x = brickWidth * col; // calculate the x position of the brick
+            float y = brickHeight * row; // calculate the y position of the brick
 
-        Color color = {r,g,b,255}; //create a color based on the random values
+            Vector2 position = {x, y};
+            Vector2 size = {brickWidth, brickHeight};
 
-        //create a brick instance
-        Brick brick(position,size,color);
-        bricks.push_back(brick); //add the brick to the vector
+            int r = GetRandomValue(0, 255);
+            int g = GetRandomValue(0, 255);
+            int b = GetRandomValue(0, 255);
 
+            Color color = {r, g, b, 255};
+
+            Brick brick(position, size, color);
+            bricks.push_back(brick);
+        }
     }
 }
+
 
 void DrawBricks(std::vector<Brick>& bricks){
     //iterate through the vector of bricks
@@ -123,7 +149,7 @@ int main(void)
     //Brick brick({200,50},{100,50},RED);
 
     //create a single ball instance
-    Ball ball({400,300},10,RED,{50,50}); 
+    Ball ball({400,300},10,RED,{200,200}); 
 
 
      //generate the bricks
